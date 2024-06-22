@@ -2,7 +2,7 @@ import { TaskController } from '@/components/TaskController';
 import { Task } from '@/models/task';
 import { remultNextApp } from 'remult/remult-next';
 import { createPostgresDataProvider } from 'remult/postgres';
-import { getUserOnServer } from '../auth/[...nextauth]/route';
+import { getUserOnServer } from '@/app/lib/nextAuth';
 
 const DATABASE_URL = process.env['DATABASE_URL'];
 
