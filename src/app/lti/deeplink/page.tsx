@@ -86,8 +86,8 @@ const DeepLink = () => {
 
     console.log("formData", formData)
 
-    if (formData?.data?.data?.form || formData?.data?.form) {
-      document.querySelector("body")?.append(formData?.data?.data?.form || formData?.data?.form);
+    if (formData?.form || formData?.form) {
+      document.querySelector("body")?.append(formData?.form);
     }
 
     setLoading(false);
@@ -104,6 +104,7 @@ const DeepLink = () => {
           className='flex gap-4 flex-col'
         >
           <DeepLinkForm loading={loading} questions={questions} form={form} />
+
         </form>
       </Form>
     </div>
