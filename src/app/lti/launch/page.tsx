@@ -1,8 +1,8 @@
 import axios from "axios";
-import { headers } from "next/headers";
-import { useSearchParams } from "next/navigation";
+import LaunchForm from "./components/LaunchForm";
 
 const Launch = async ({ searchParams }: any) => {
+
 
   const getToken = async () => {
     const ltik = searchParams?.ltik;
@@ -23,12 +23,13 @@ const Launch = async ({ searchParams }: any) => {
 
   const token = await getToken();
 
+  if (!token) return null;
   console.log("token", token);
 
-  if (!token) return null;
-
   return (
-    <div>{token.status}</div>
+    <div>
+      <LaunchForm />
+    </div>
   )
 }
 
