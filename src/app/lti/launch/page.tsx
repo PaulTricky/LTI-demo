@@ -1,11 +1,16 @@
+import axios from "axios";
+
 const Launch = async () => {
 
   const getToken = async () => {
     try {
-      const res = await fetch(`${process.env.NEXTAUTH_URL}/api/idtoken`);
-      return res.json();
+      const res = await axios(`${process.env.NEXTAUTH_URL}/api/idtoken`, {
+        method: 'GET',
+      });
+      return res.data.data
     } catch(e) {
       console.log("eeeee", e)
+      return null;
     }
   }
 
@@ -16,7 +21,7 @@ const Launch = async () => {
   if (!token) return null;
 
   return (
-    <div>{JSON.stringify(token)}</div>
+    <div>{token.status}</div>
   )
 }
 
