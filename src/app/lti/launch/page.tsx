@@ -2,12 +2,11 @@ import axios from "axios";
 import { headers } from "next/headers";
 import { useSearchParams } from "next/navigation";
 
-const Launch = async () => {
+const Launch = async ({ searchParams }: any) => {
 
   const getToken = async () => {
-    const headersQuery = headers()
-    const url = new URL(headersQuery.get("referer") as string);
-    const ltik = url.searchParams.get("ltik");
+    const ltik = searchParams?.ltik;
+    console.log("ltik **", ltik, searchParams);
     try {
       const res = await axios(`${process.env.NEXTAUTH_URL}/api/idtoken`, {
         method: 'GET',
