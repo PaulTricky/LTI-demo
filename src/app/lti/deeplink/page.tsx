@@ -82,7 +82,13 @@ const DeepLink = () => {
 
     const data = await questionRepo.save(model);
 
-    await sendDeepLinkToLTIAAS(data.id);
+    const formData = await sendDeepLinkToLTIAAS(data.id);
+
+    console.log("formData", formData)
+
+    if (formData?.data?.data?.form || formData?.data?.form) {
+      document.querySelector("body")?.append(formData?.data?.data?.form || formData?.data?.form);
+    }
 
     setLoading(false);
     form.reset();
