@@ -28,7 +28,7 @@ const Launch = async ({ searchParams }: any) => {
 
   return (
     <div>
-      <LaunchForm />
+      <LaunchForm token={token} />
     </div>
   )
 }

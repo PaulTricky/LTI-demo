@@ -8,18 +8,18 @@ import PreviewForm from "./PreviewForm";
 
 const questionRepo = remult.repo(Question);
 
-const LaunchForm = () => {
+const LaunchForm = ({ token }: any) => {
   const [question, setQuestion] = useState<Question>();
-  const clientSearchParams = useSearchParams();
 
-  console.log("clientSearchParams", clientSearchParams.get("resourceid"));
-  const resourceid = clientSearchParams.get("resourceid");
 
   useEffect(() => {
-    if (resourceid) {
-      questionRepo.findId(resourceid).then(setQuestion);
+    if (token?.launch?.target) {
+      const resourceid = (new URL(token?.launch?.target || ''))?.searchParams?.get?.('resourceid');
+      if (resourceid) {
+        questionRepo.findId(resourceid).then(setQuestion);
+      }
     }
-  }, [resourceid])
+  }, [token?.launch?.target])
 
   console.log("question", question)
 
