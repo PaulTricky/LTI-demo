@@ -53,7 +53,14 @@ export function DeepLinkForm({
   return (
     <TooltipProvider>
       <header className='w-full fixed top-0 z-10 justify-between flex h-[53px] items-center gap-1 border-b bg-background px-4'>
-        <h1 className='text-xl font-semibold'>Deep Link</h1>
+        <h1 className='text-xl font-semibold'>
+          <InputForm 
+             form={form}
+             field={'title'}
+             label=''
+             className='m-0 w-full'
+          />
+        </h1>
         <div className='flex items-center gap-2'>
           <Button
             variant='secondary'

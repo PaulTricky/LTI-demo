@@ -14,6 +14,10 @@ export async function GET(request: NextRequest) {
         type: 'ltiResourceLink',
         url: `${process.env.LTIAAS_URL}/lti/launch?resourceid=${resourceid}`,
         title: 'Resource',
+        lineItem: {
+          scoreMaximum: 100,
+          resourceId: resourceid,
+        },
       },
     ],
     options: {

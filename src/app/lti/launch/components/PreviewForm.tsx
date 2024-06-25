@@ -35,49 +35,43 @@ import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
+import axios from 'axios';
+import { useSearchParams } from 'next/navigation';
 
 const PreviewForm = ({ loading, question = {} }: {loading: boolean, question: any}) => {
+
+  const searchParams = useSearchParams();
+
+  const ltik = searchParams.get('ltik');
+
+  const getLineItems = async () => {
+    try {
+      const res = await axios(`/api/lineItems`, {
+        method: 'GET',
+        headers: {
+          'x_ltik': ltik
+        }
+      });
+      return res.data.data
+    } catch(e) {
+      console.log("eeeee", e)
+      return null;
+    }
+  }
  
   return (
     <TooltipProvider>
       <header className='w-full fixed top-0 z-10 justify-between flex h-[53px] items-center gap-1 border-b bg-background px-4'>
-        <h1 className='text-xl font-semibold'>Deep Link</h1>
+        <h1 className='text-xl font-semibold'>Question 1</h1>
         <div className='flex items-center gap-2'>
           <Button
             variant='secondary'
             type='button'
             size='sm'
             className='gap-1.5 text-sm'
+            onClick={getLineItems}
           >
-            <Eye className='size-3.5' />
-            Preview Question
-          </Button>
-          <Button
-            variant='ghost'
-            type='submit'
-            size='sm'
-            className='bg-[#2d88bc] text-white gap-1.5 text-sm'
-            disabled={loading}
-          >
-            {loading ? (
-              <svg
-                xmlns='http://www.w3.org/2000/svg'
-                width='24'
-                height='24'
-                viewBox='0 0 24 24'
-                fill='none'
-                stroke='currentColor'
-                strokeWidth='2'
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                className={cn('mr-2 h-4 w-4 animate-spin')}
-              >
-                <path d='M21 12a9 9 0 1 1-6.219-8.56' />
-              </svg>
-            ) : (
-              <Send className='size-3.5' />
-            )}
-            Create Question
+            Get Line Items 1
           </Button>
         </div>
       </header>
@@ -97,38 +91,6 @@ const PreviewForm = ({ loading, question = {} }: {loading: boolean, question: an
               </TooltipTrigger>
               <TooltipContent side='right' sideOffset={5}>
                 {question?.question}
-              </TooltipContent>
-            </Tooltip>
-          </nav>
-          <nav className='mt-auto grid gap-1 p-2'>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='mt-auto rounded-lg'
-                  aria-label='Help'
-                >
-                  <LifeBuoy className='size-5' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side='right' sideOffset={5}>
-                Help
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='mt-auto rounded-lg'
-                  aria-label='Account'
-                >
-                  <SquareUser className='size-5' />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side='right' sideOffset={5}>
-                Account
               </TooltipContent>
             </Tooltip>
           </nav>

@@ -12,6 +12,7 @@ yup.addMethod(yup.array, "unique", function (
 });
 
 export const validationSchema = yup.object().shape({
+  title: yup.string().required('required'),
   question: yup.string().required('required'),
   description: yup.string(),
   embedLink: yup.string().required(),
@@ -24,6 +25,7 @@ export const validationSchema = yup.object().shape({
 });
 
 export const defaultValues = {
+  title: '',
   question: '',
   description: '',
   embedLink: '',

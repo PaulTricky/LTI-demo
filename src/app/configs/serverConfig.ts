@@ -6,3 +6,6 @@ export const configs = {
 
 export const getLtikAuthHeader = (ltik: string) =>
   `LTIK-AUTH-V2 ${configs.API_KEY}:${ltik}`;
+
+export const getServiceAuthHeader = (ltik: string) =>
+  `SERVICE-AUTH-V1 ${configs.API_KEY}:${ltik}`;

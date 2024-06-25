@@ -50,6 +50,31 @@ const DeepLink = () => {
     }
   }
 
+  const createLineItem = async (title: string, resourceId: string, resourceLinkId: string) => {
+    const ltik = searchParams.get('ltik');
+    
+    try {
+      const res = await axios(`/api/lineItem`, {
+        method: 'POST',
+        headers: {
+          'x_ltik': ltik,
+        },
+        data: {
+          label: title, 
+          scoreMaximum: 100, 
+          resourceId,
+          tag: "grade", 
+          resourceLinkId, 
+          gradesReleased: true 
+        }
+      });
+      return res.data.data
+    } catch(e) {
+      console.log("eeeee", e)
+      return null;
+    }
+  }
+
   const onSubmit = async (values: any) => {
     console.log("submit", values);
     const multipleChoice = values?.multiple;
@@ -80,18 +105,16 @@ const DeepLink = () => {
       multiple: values?.multiple
     };
 
-    console.log("model", model);
-
     const data = await questionRepo.save(model);
 
     const formData = await sendDeepLinkToLTIAAS(data.id);
-
-    console.log("formData", formData)
+    const resourceLinkId = `/lti/launch?resourceid=${data.id}`;
+    const resourceId = data.id;
+    await createLineItem(values?.title, resourceId, resourceLinkId);
 
     if (formData?.form) {
       setParseStr(formData?.form)
     }
-
 
     setLoading(false);
     form.reset();
