@@ -112,12 +112,12 @@ const DeepLink = () => {
     const resourceId = data.id;
     const item = await createLineItem(values?.title, resourceId, resourceLinkId);
     console.log("item", item);
-    alert(1);
-
+    
     if (formData?.form) {
       setTimeout(() => {
+        alert(1);
         setParseStr(formData?.form)
-      }, 1000);
+      }, 10000);
     }
 
     setLoading(false);
