@@ -26,7 +26,7 @@ const LaunchForm = ({ token }: any) => {
 
   return (
     <div>
-      <PreviewForm loading={false} question={question} />
+      <PreviewForm token={token} loading={false} question={question} />
     </div>
   )
 }

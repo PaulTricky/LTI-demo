@@ -38,7 +38,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 
-const PreviewForm = ({ loading, question = {} }: {loading: boolean, question: any}) => {
+const PreviewForm = ({ token, loading, question = {} }: { token: any, loading: boolean, question: any}) => {
 
   const searchParams = useSearchParams();
 
@@ -58,6 +58,34 @@ const PreviewForm = ({ loading, question = {} }: {loading: boolean, question: an
       return null;
     }
   }
+
+
+  const createLineItem = async () => {
+      const ltik = searchParams.get('ltik');
+      
+      try {
+        const resourceLinkId = token?.launch?.resourceLink?.id;
+        const resourceId = token?.launch?.resource?.id;
+        const res = await axios(`/api/lineItem`, {
+          method: 'POST',
+          headers: {
+            'x_ltik': ltik,
+          },
+          data: {
+            label: 'Exercise 1', 
+            scoreMaximum: 100, 
+            resourceId,
+            tag: "grade", 
+            resourceLinkId, 
+            gradesReleased: true 
+          }
+        });
+        return res.data.data
+      } catch(e) {
+        console.log("eeeee", e)
+        return null;
+      }
+  }
  
   return (
     <TooltipProvider>
@@ -71,8 +99,17 @@ const PreviewForm = ({ loading, question = {} }: {loading: boolean, question: an
             className='gap-1.5 text-sm'
             onClick={getLineItems}
           >
-            Get Line Items 1
+            Get Line Items
           </Button>
+            <Button
+              variant='secondary'
+              type='button'
+              size='sm'
+              className='gap-1.5 text-sm'
+              onClick={createLineItem}
+            >
+              Create Line Item
+            </Button>
         </div>
       </header>
       <div className='grid h-screen w-full pt-[53px] pl-[53px]'>
