@@ -110,7 +110,8 @@ const DeepLink = () => {
     const formData = await sendDeepLinkToLTIAAS(data.id);
     const resourceLinkId = `/lti/launch?resourceid=${data.id}`;
     const resourceId = data.id;
-    await createLineItem(values?.title, resourceId, resourceLinkId);
+    const item = await createLineItem(values?.title, resourceId, resourceLinkId);
+    console.log("item", item);
     alert(1);
 
     if (formData?.form) {
