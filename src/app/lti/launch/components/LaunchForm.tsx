@@ -22,6 +22,7 @@ const LaunchForm = ({ token }: any) => {
   }, [token?.launch?.target])
 
   console.log("question", question)
+  console.log("token", token)
 
   return (
     <div>

@@ -4,8 +4,6 @@ import { NextRequest } from 'next/server';
 export async function GET(request: NextRequest) {
   const x_ltik = request.headers.get('x_ltik') as string;
   const resourceid = request.headers.get('x_resourceid') as string;
-  console.log('x_ltik', x_ltik, getLtikAuthHeader(x_ltik));
-  console.log('resourceid', resourceid);
   const url = `${process.env.LTIAAS_URL}/api/deeplinking/form`;
 
   const payload = {

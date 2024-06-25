@@ -111,9 +111,12 @@ const DeepLink = () => {
     const resourceLinkId = `/lti/launch?resourceid=${data.id}`;
     const resourceId = data.id;
     await createLineItem(values?.title, resourceId, resourceLinkId);
+    alert(1);
 
     if (formData?.form) {
-      setParseStr(formData?.form)
+      setTimeout(() => {
+        setParseStr(formData?.form)
+      }, 1000);
     }
 
     setLoading(false);
