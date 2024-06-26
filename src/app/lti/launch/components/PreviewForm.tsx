@@ -134,7 +134,7 @@ const PreviewForm = ({
   const submitScore = async (lineItemId: string) => {
     const ltik = searchParams.get('ltik');
     try {
-      const res = await axios(`/api/lineItem`, {
+      const res = await axios(`/api/scores`, {
         method: 'POST',
         headers: {
           x_ltik: ltik,
