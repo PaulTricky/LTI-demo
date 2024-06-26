@@ -32,7 +32,9 @@ export async function GET(request: NextRequest) {
   const x_line_item_id = request.headers.get('x_line_item_id') as string;
   const x_user_id = request.headers.get('x_user_id') as string;
   const encoded_id = encodeURIComponent(x_line_item_id);
-  const url = `${process.env.LTIAAS_URL}/api/lineitems/${encoded_id}/scores?userId=${x_user_id}`;
+  const url = `${process.env.LTIAAS_URL}/api/lineitems/${encoded_id}/scores?userId=${x_user_id}&limit=5`;
+
+  console.log('url get score', url);
 
   const res = await fetch(url, {
     headers: {
