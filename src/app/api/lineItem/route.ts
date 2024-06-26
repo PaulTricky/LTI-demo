@@ -11,8 +11,6 @@ export async function POST(request: NextRequest) {
 
   const payload = await request.json();
 
-  console.log('payload', payload);
-
   const res = await fetch(url, {
     method: 'POST',
     headers: {

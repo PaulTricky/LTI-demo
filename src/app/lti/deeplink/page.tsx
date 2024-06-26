@@ -125,12 +125,6 @@ const DeepLink = () => {
 
     
   };
-// 
-  // useEffect(() => {
-    // setTimeout(() => {
-      // setParseStr('<form id="ltiaas_dl" style="display: none;" action="https://sandbox.openedx.org/api/lti_consumer/v1/lti/20/lti-dl/response" method="POST">\n                  <input type="hidden" name="JWT" value="eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkJaSFFTa3NnNGRtU3FHZ1VvOWx0In0.eyJpc3MiOiIwNTViMmI5Ni0wNTgzLTQxNjktYjY0Mi0yMzNiYzFlMzIyOTAiLCJhdWQiOiJodHRwczovL3NhbmRib3gub3BlbmVkeC5vcmciLCJub25jZSI6InVlUXRVcWE5M3l4QTlNM3JXNlZ0aWJHaEZpSEQ1SXE2IiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vZGVwbG95bWVudF9pZCI6IjEiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS9jbGFpbS9tZXNzYWdlX3R5cGUiOiJMdGlEZWVwTGlua2luZ1Jlc3BvbnNlIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGkvY2xhaW0vdmVyc2lvbiI6IjEuMy4wIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGktZGwvY2xhaW0vbXNnIjoiRGVlcCBMaW5raW5nIHN1Y2Nlc3NmdWwhIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9sdGktZGwvY2xhaW0vbG9nIjoiZGVlcF9saW5raW5nX3N1Y2Nlc3NmdWwiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL2x0aS1kbC9jbGFpbS9jb250ZW50X2l0ZW1zIjpbeyJ0eXBlIjoibHRpUmVzb3VyY2VMaW5rIiwidXJsIjoiaHR0cHM6Ly9sdGktZ2FtZS5sdGlhYXMuY29tL2x0aS9sYXVuY2g_cmVzb3VyY2VpZD1pM3c1bDI2bXN3anM1Yjd4ejdvencxNXgiLCJ0aXRsZSI6IlJlc291cmNlIn1dLCJpYXQiOjE3MTkxNjU4MzUsImV4cCI6MTcxOTE2NjQzNX0.gzuqqXFVyEsHdR6pZ6ejZzfhcwNqINBgqeSmRYn9muClcUMNptQGTNzxzRS-o_uu6hTkZQE6BoaHGdtkIoBqHsQGuRIEByQICtBRIPe_7Eq-O_k2lOLX-HN0Lyf5YC6zPFE0XeZnHfqICkC9Qd05n2Zi2fJxH8Rd_bhtKc00-pg34DsBCO3YDS1dP_QPSDt2qH72pnD_yfuR56v7KCkMHcsFT0EeH2OnEIA8bo7JTTcfNKmGhIvi_PIWf36RB8pT5anxogeUzNurWQfrL9Socct8UKaxNrtxHlGGsmViZp445By5H7Kr0PGhd-L8jse4LUw74xmy509sr1ilJDdmBg" />\n                </form>\n                \x3Cscript>\n            document.getElementById("ltiaas_dl").submit()\n                \x3C/script>')
-    // }, 3000)
-  // }, [])
 
   return (
     <div>
