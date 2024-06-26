@@ -131,6 +131,23 @@ const PreviewForm = ({
     }
   };
 
+  const getSubmitScore = async () => {
+    const ltik = searchParams.get('ltik');
+
+    try {
+        await axios(`/api/scores`, {
+        method: 'GET',
+        headers: {
+          x_ltik: ltik,
+          x_line_item_id: lineItemId,
+          x_user_id: token?.user?.id, 
+        },
+      });
+    } catch(e) {
+
+    }
+  }
+
   const submitScore = async (lineItemId: string) => {
     const ltik = searchParams.get('ltik');
     try {
@@ -186,6 +203,15 @@ const PreviewForm = ({
             onClick={getLineItemByResourceID}
           >
             Get Line Item By Resource
+          </Button>
+          <Button
+            variant='secondary'
+            type='button'
+            size='sm'
+            className='gap-1.5 text-sm'
+            onClick={getSubmitScore}
+>
+            Get Submit score
           </Button>
         </div>
       </header>
