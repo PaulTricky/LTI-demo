@@ -97,7 +97,7 @@ const DeepLink = () => {
       })
     }
 
-    const model: Omit<Question, 'id'> = {
+    const model: Partial<Question> = {
       question: values?.question,
       description: values.description,
       embedLink: values?.embedLink,
