@@ -18,4 +18,7 @@ export class Question {
 
   @Fields.boolean()
   multiple = false;
+
+  @Fields.createdAt()
+  createdAt = '';
 }

@@ -1,29 +1,5 @@
 'use client';
 
-import {
-  Bird,
-  Book,
-  Bot,
-  Code2,
-  CornerDownLeft,
-  Eye,
-  LifeBuoy,
-  Mic,
-  Paperclip,
-  Plus,
-  Rabbit,
-  Send,
-  Settings,
-  Settings2,
-  Share,
-  SquareTerminal,
-  SquareUser,
-  Trash,
-  Triangle,
-  Turtle,
-} from 'lucide-react';
-
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
@@ -42,44 +18,23 @@ import {
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useToast } from '@/components/ui/use-toast';
 
 const PreviewForm = ({
   token,
   loading,
+  question,
 }: {
   token: any;
   loading: boolean;
   question: any;
 }) => {
   const [answers, setAnswers] = useState<string[]>([]);
-  const question = {
-    id: 'b81p09bt837mqlogedtxuv5r',
-    question: '2+2=??',
-    description:
-      'Question: Which of the following colors is considered a "cool" color on the color wheel?\n\nChoices:\nA. Red\nB. Yellow\nC. Green\nD. Blue\n\nCorrect choice: D. Blue\n\nDetailed description: Blue is classified as a "cool" color on the color wheel. Cool colors are typically associated with calmness, tranquility, and a sense of relaxation. They often appear to recede in space and can create a soothing atmosphere in art and design. Blue hues, such as sky blue and navy blue, are commonly used to convey a sense of depth or distance. In contrast, warm colors like reds, yellows, and oranges evoke feelings of energy, vibrancy, and warmth.',
-    embedLink:
-      'https://embed.cardio-scape.com/?t=AQICAHiQXjIAiUY0ObZsMZESlu0z3tIPtB0Uo3yPuoJPY-2JywEmuHJ1WFc3PZHiQjKAlOowAAAAgzCBgAYJKoZIhvcNAQcGoHMwcQIBADBsBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNxNdlPSdb7FjJuyNAIBEIA_-sWAYYxyjrJJZpK3I5xuLPrb1Qrt8RROuj0CmIsHhZ3lfpiJiGDpEtTgPyYmBBXLGSg1nq-D_aW_hkDItV8N',
-    choices: [
-      {
-        correct: '0',
-        title: 'A. 1',
-      },
-      {
-        correct: '0',
-        title: 'B. 2',
-      },
-      {
-        correct: '0',
-        title: 'C. 3',
-      },
-      {
-        correct: '1',
-        title: 'D. 4',
-      },
-    ],
-    multiple: false,
-  };
+  const lineItemId = useMemo(() => token?.launch?.lineItemId, []);
+
+  console.log("lineItemId", lineItemId)
+  const { toast } = useToast();
 
   const searchParams = useSearchParams();
 
@@ -100,10 +55,32 @@ const PreviewForm = ({
     }
   };
 
-  const submitAnswer = () => {
+  const submitAnswer = async () => {
     console.log('answers', answers);
-    const getLineItem = getLineItemByResourceID();
-    console.log("getLineItem", getLineItem);
+    try {
+
+    let _lineItemId = lineItemId;
+    if (!_lineItemId) {
+      const lineItem = await createLineItem();
+      _lineItemId = lineItem?.data?.id;
+    }
+
+    const data = await submitScore(_lineItemId);
+
+    console.log("data", data);
+
+    return toast({
+      description: 'Submit score success',
+    })
+    // console.log("getLineItem", getLineItem);
+  }
+ catch(e) {
+  console.log("submit error", e);
+  return toast({
+    description: 'Failed',
+    variant: 'destructive'
+  })
+ }
   };
 
   const getLineItemByResourceID = async () => {
@@ -145,6 +122,30 @@ const PreviewForm = ({
           tag: 'grade',
           resourceLinkId,
           gradesReleased: true,
+        },
+      });
+      return res.data.data;
+    } catch (e) {
+      console.log('eeeee', e);
+      return null;
+    }
+  };
+
+  const submitScore = async (lineItemId: string) => {
+    const ltik = searchParams.get('ltik');
+    try {
+      const res = await axios(`/api/lineItem`, {
+        method: 'POST',
+        headers: {
+          x_ltik: ltik,
+          x_line_item_id: lineItemId,
+        },
+        data: {
+          userId: token?.user?.id, 
+          activityProgress: "Completed", 
+          gradingProgress: "FullyGraded", 
+          scoreGiven: 95, 
+          comment: "user submit" 
         },
       });
       return res.data.data;
