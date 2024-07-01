@@ -20,11 +20,13 @@ export async function POST(request: NextRequest) {
     body: JSON.stringify(payload),
   });
 
-  const data = await res.json();
-
-  console.log('>=== **', data);
-
-  return Response.json({ data });
+  try {
+    const data = await res.json();
+    console.log('>=== **', data);
+    return Response.json({ data });
+  } catch (e) {
+    return Response.json({ data: e });
+  }
 }
 
 export async function GET(request: NextRequest) {

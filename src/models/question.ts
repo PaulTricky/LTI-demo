@@ -1,18 +1,16 @@
-import { Allow, Entity, Fields, remult } from 'remult';
+import { Allow, Entity, Fields, Relations, remult } from 'remult';
+import { Section } from './section';
 
-@Entity('questions', {
+@Entity('question', {
   allowApiCrud: true,
-  // allowApiInsert: 'admin',
 })
 export class Question {
   @Fields.cuid()
   id = '';
+
   @Fields.string()
-  question = '';
-  @Fields.string()
-  description = '';
-  @Fields.string()
-  embedLink = '';
+  title = '';
+
   @Fields.json()
   choices = [];
 
@@ -20,5 +18,11 @@ export class Question {
   multiple = false;
 
   @Fields.createdAt()
-  createdAt = '';
+  createdAt = new Date();
+
+  @Fields.string({ dbName: 'section' })
+  sectionId = ''; // Custom field to hold the related entity's identifier
+
+  @Relations.toOne<Question, Section>(() => Section, 'sectionId')
+  section?: Section;
 }

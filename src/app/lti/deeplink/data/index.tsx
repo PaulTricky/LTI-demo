@@ -12,24 +12,20 @@ yup.addMethod(yup.array, "unique", function (
 });
 
 export const validationSchema = yup.object().shape({
-  title: yup.string().required('required'),
-  question: yup.string().required('required'),
-  description: yup.string(),
-  embedLink: yup.string().required(),
-  choices: (yup.array(yup.object({
-    title: yup.string().required("Choice is required"),
-    correct: yup.string().required(),
-  })).min(2, 'At least 2 choices') as any).unique("Choice list must be unique", (val: any) => val.title),
-  multiple: yup.bool(),
-  answer: yup.array()
+  section: yup.array(yup.object({
+    embedLink: yup.string().required(),
+    questions: yup.array(yup.object({
+      title: yup.string().required('required'),
+      choices: (yup.array(yup.object({
+        title: yup.string().required("Choice is required"),
+        correct: yup.string().required(),
+      })).min(2, 'At least 2 choices') as any).unique("Choice list must be unique", (val: any) => val.title),
+      multiple: yup.bool(),
+      // answer: yup.array()
+    }))
+  })),
 });
 
 export const defaultValues = {
-  title: '',
-  question: '',
-  description: '',
-  embedLink: '',
-  choices: [],
-  multiple: false,
-  answer: []
+  section: [],
 }
