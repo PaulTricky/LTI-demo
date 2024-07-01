@@ -5,11 +5,12 @@ import { createPostgresDataProvider } from 'remult/postgres';
 import { getUserOnServer } from '@/app/lib/nextAuth';
 import { Question } from '@/models/question';
 import { Section } from '@/models/section';
+import { Resource } from '@/models/resource';
 
 const DATABASE_URL = process.env['DATABASE_URL'];
 
 const api = remultNextApp({
-  entities: [Task, Question, Section],
+  entities: [Resource, Question, Section],
   controllers: [TaskController],
   dataProvider: createPostgresDataProvider({ connectionString: DATABASE_URL }),
   getUser: getUserOnServer,

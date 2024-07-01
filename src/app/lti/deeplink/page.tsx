@@ -24,9 +24,11 @@ import InputForm from '@/components/Form/Input';
 import TextAreaForm from '@/components/Form/TextArea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Section } from '@/models/section';
+import { Resource } from '@/models/resource';
 
 const sectionRepo = remult.repo(Section);
 const questionRepo = remult.repo(Question);
+const resourceRepo = remult.repo(Resource);
 const DeepLink = () => {
   const searchParams = useSearchParams();
   const form = useForm({
@@ -37,7 +39,7 @@ const DeepLink = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [parseStr, setParseStr] = useState('');
-  const [active, setActive] = useState(null);
+  const [active, setActive] = useState<number | null>(null);
 
   const { fields, append, prepend, remove, swap, move, insert } =
     useFieldArray<any>({
@@ -48,7 +50,13 @@ const DeepLink = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
 
   useEffect(() => {
-    // questionRepo.find().then(setQuestions);
+    sectionRepo.find({
+      include: {
+        questions: true
+      }
+    }).then((e) => {
+      console.log("e ***", e)
+    });
   }, []);
 
   const sendDeepLinkToLTIAAS = async (resourceid: string) => {
@@ -126,25 +134,18 @@ const DeepLink = () => {
     // }
     console.log("values", values);
 
-    const result = await sectionRepo.save(values?.section[0]);
+    const newResource = await resourceRepo.save({});
 
-    console.log("result", result);
+    values?.section.forEach((sec: any) => {
+      resourceRepo.relations(newResource).sections.save({ description: sec?.description, embedLink: sec?.embedLink  }).then(section => {
+        sectionRepo.relations(section).questions.save(sec.questions);
+      })
+    })
 
-    setLoading(false);
-    return;
-    const model: Partial<Question> = {
-      question: values?.question,
-      description: values.description,
-      embedLink: values?.embedLink,
-      choices: values?.choices,
-      multiple: values?.multiple,
-    };
 
-    const data = await questionRepo.save(model);
-
-    const formData = await sendDeepLinkToLTIAAS(data.id);
-    const resourceLinkId = `/lti/launch?resourceid=${data.id}`;
-    const resourceId = data.id;
+    const formData = await sendDeepLinkToLTIAAS(newResource.id);
+    const resourceLinkId = `/lti/launch?resourceid=${newResource.id}`;
+    const resourceId = newResource.id;
     const item = await createLineItem(
       values?.title,
       resourceId,
