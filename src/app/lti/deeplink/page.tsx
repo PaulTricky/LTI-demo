@@ -142,14 +142,14 @@ const DeepLink = () => {
     console.log("newResource", newResource)
 
     const formData = await sendDeepLinkToLTIAAS(newResource.id);
-    const resourceLinkId = `/lti/launch?resourceid=${newResource.id}`;
-    const resourceId = newResource.id;
-    const item = await createLineItem(
-      values?.title,
-      resourceId,
-      resourceLinkId
-    );
-    console.log('item', item);
+    // const resourceLinkId = `/lti/launch?resourceid=${newResource.id}`;
+    // const resourceId = newResource.id;
+    // const item = await createLineItem(
+      // values?.title,
+      // resourceId,
+      // resourceLinkId
+    // );
+    // console.log('item', item);
 
     if (formData?.form) {
       setTimeout(() => {

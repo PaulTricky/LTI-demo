@@ -25,7 +25,7 @@ const LaunchForm = ({ token }: any) => {
       console.log("resourceid", resourceid)
       if (resourceid) {
         setLoading(true)
-        resourceRepo.findId('wfsvnmi3thynfbc3saidluor', {
+        resourceRepo.findId(resourceid, {
           include: {
             sections: true,
           },
