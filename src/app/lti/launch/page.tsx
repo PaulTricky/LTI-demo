@@ -23,7 +23,7 @@ const Launch = async ({ searchParams }: any) => {
 
   const token = await getToken();
 
-  if (!token) return null;
+  // if (!token) return null;
   console.log("token", token);
 
   return (

@@ -15,7 +15,10 @@ export class Section {
   @Fields.string()
   embedLink: string = '';
 
-  @Relations.toMany(() => Question, 'sectionId')
+  @Relations.toMany(() => Question, {
+    defaultIncluded: true,
+    field: 'sectionId',
+  })
   questions?: Question[];
 
   @Relations.toOne<Section, Resource>(() => Resource, 'resourceId')
