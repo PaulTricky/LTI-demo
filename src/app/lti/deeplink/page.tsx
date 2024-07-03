@@ -153,13 +153,13 @@ const DeepLink = () => {
 
     if (formData?.form) {
       setTimeout(() => {
-        alert(1);
         setParseStr(formData?.form);
-      }, 10000);
+        setLoading(false);
+        form.reset();
+      }, 1000);
+    } else {
+      setLoading(false);
     }
-
-    setLoading(false);
-    form.reset();
   };
 
   return (
