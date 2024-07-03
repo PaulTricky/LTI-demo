@@ -156,7 +156,7 @@ const DeepLink = () => {
         setParseStr(formData?.form);
         setLoading(false);
         form.reset();
-      }, 1000);
+      }, 2000);
     } else {
       setLoading(false);
     }
