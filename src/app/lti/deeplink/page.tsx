@@ -107,9 +107,6 @@ const DeepLink = () => {
   };
 
   const onSubmit = async (values: any) => {
-    try {
-
-    
     console.log('submit', values);
     // const multipleChoice = values?.multiple;
 
@@ -142,6 +139,7 @@ const DeepLink = () => {
       })
     })
 
+    console.log("newResource", newResource)
 
     const formData = await sendDeepLinkToLTIAAS(newResource.id);
     const resourceLinkId = `/lti/launch?resourceid=${newResource.id}`;
@@ -162,9 +160,6 @@ const DeepLink = () => {
 
     setLoading(false);
     form.reset();
-  } catch(e) {
-    setLoading(false);
-  }
   };
 
   return (
