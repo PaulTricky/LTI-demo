@@ -179,7 +179,7 @@ const PreviewForm = ({
   console.log('selectedSection', resource);
   console.log('questionMap', questionMap);
 
-  if (!token)
+  if ((!token || !resource?.sections?.length))
     return (
       <div
         style={
@@ -199,30 +199,10 @@ const PreviewForm = ({
       </div>
     );
 
-  if (!resource?.sections?.length) {
-    return (
-      <div
-        style={
-          {
-            // background: 'radial-gradient(#cee00f, #89d12d)',
-          }
-        }
-        className='p-8'
-      >
-        <img
-          src='/images/background.jpg'
-          className='absolute top-0 left-0 w-full h-full'
-        />
-        <div className='absolute left-1/2 top-1/2 text-white'>
-          Don't have any questions
-        </div>
-      </div>
-    );
-  }
-
   // const getExerciseDone = useCallback((section: Section) => {
   // return section?.questions?.every(question => !!(answers[question?.id]?.length > 0))
   // }, [answers])
+  
 
   return (
     <div className='p-8 max-w-[900px] mx-auto'>

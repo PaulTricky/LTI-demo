@@ -1,7 +1,7 @@
 import { getLtikAuthHeader } from '@/app/configs/serverConfig';
 import { NextRequest } from 'next/server';
-import { api } from '../[...remult]/route';
 import { ResourceController } from '@/app/lti/launch/controller/resourceController';
+import { api } from '@/app/lib/remultInit';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,15 +23,15 @@ export async function POST(request: NextRequest) {
 
   console.log('payload', payload);
 
-  const allQuestions: any = resource?.sections?.reduce((sum, cur) => {
+  const allQuestions: any = resource?.sections?.reduce((sum: any, cur: any) => {
     sum += cur?.questions?.length || 0;
     return sum;
   }, 0);
 
   let correctQuestions = 0;
 
-  resource?.sections?.forEach((section) => {
-    section?.questions?.forEach((question) => {
+  resource?.sections?.forEach((section: any) => {
+    section?.questions?.forEach((question: any) => {
       const correctAnswers = question?.choices
         ?.filter((e: any) => e.correct === '1')
         ?.map((e: any) => e.title);
