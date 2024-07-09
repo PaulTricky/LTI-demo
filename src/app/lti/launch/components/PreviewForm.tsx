@@ -67,7 +67,8 @@ const PreviewForm = ({
       let _lineItemId = lineItemId;
       if (!_lineItemId) {
         const lineItem = await createLineItem();
-        _lineItemId = lineItem?.data?.id;
+        console.log("lineItem", lineItem);
+        _lineItemId = lineItem?.id;
       }
 
       const data = await submitScore(_lineItemId);
