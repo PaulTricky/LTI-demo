@@ -10,15 +10,10 @@ import {
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { RadioGroup } from '@/components/ui/radio-group';
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from '@/components/ui/resizable';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Resource } from '@/models/resource';
 import { Separator } from '@/components/ui/separator';
@@ -34,18 +29,16 @@ const PreviewForm = ({
   resource,
   questionMap,
   setQuestionMap,
-  setSubmitExercise,
-  submitExercise,
+  resourceid,
 }: {
   token: any;
+  resourceid: string | null;
   loading: boolean;
   resource?: Resource;
-  submitExercise: Record<string, boolean>;
-  setSubmitExercise: any;
   setQuestionMap: any;
   questionMap: Record<string, number>;
 }) => {
-  const [answers, setAnswers] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const lineItemId = useMemo(() => token?.launch?.lineItemId, []);
   console.log('lineItemId', lineItemId);
   const { toast } = useToast();
@@ -53,7 +46,6 @@ const PreviewForm = ({
   const searchParams = useSearchParams();
 
   const ltik = searchParams.get('ltik');
-
   const getLineItems = async () => {
     try {
       const res = await axios(`/api/lineItems`, {
@@ -166,12 +158,14 @@ const PreviewForm = ({
         headers: {
           x_ltik: ltik,
           x_line_item_id: lineItemId,
+          x_resourceid: resourceid,
         },
         data: {
           userId: token?.user?.id,
           activityProgress: 'Completed',
           gradingProgress: 'FullyGraded',
-          scoreGiven: 95,
+          // scoreGiven: 95,
+          answers: JSON.stringify(answers),
           comment: 'user submit',
         },
       });
@@ -185,7 +179,7 @@ const PreviewForm = ({
   console.log('selectedSection', resource);
   console.log('questionMap', questionMap);
 
-  if (!resource?.sections?.length || !token)
+  if (!token)
     return (
       <div
         style={
@@ -199,13 +193,39 @@ const PreviewForm = ({
           src='/images/background.jpg'
           className='absolute top-0 left-0 w-full h-full'
         />
+        <div className='absolute left-1/2 top-1/2 text-white'>
+          Loading Question...
+        </div>
       </div>
     );
 
+  if (!resource?.sections?.length) {
+    return (
+      <div
+        style={
+          {
+            // background: 'radial-gradient(#cee00f, #89d12d)',
+          }
+        }
+        className='p-8'
+      >
+        <img
+          src='/images/background.jpg'
+          className='absolute top-0 left-0 w-full h-full'
+        />
+        <div className='absolute left-1/2 top-1/2 text-white'>
+          Don't have any questions
+        </div>
+      </div>
+    );
+  }
+
+  // const getExerciseDone = useCallback((section: Section) => {
+  // return section?.questions?.every(question => !!(answers[question?.id]?.length > 0))
+  // }, [answers])
+
   return (
-    <div
-      className='p-8 max-w-[900px] mx-auto'
-    >
+    <div className='p-8 max-w-[900px] mx-auto'>
       <Tabs className='w-auto' defaultValue={resource?.sections?.[0]?.id}>
         <img
           src='/images/background.jpg'
@@ -218,6 +238,10 @@ const PreviewForm = ({
                 className={`h-[50px] inline-flex items-center text-muted-foreground w-full justify-start rounded-none border-b bg-white`}
               >
                 {resource?.sections?.map((section, index) => {
+                  const isExerciseDone = section?.questions?.every(
+                    (question) => !!(answers[question?.id]?.length > 0)
+                  );
+
                   return (
                     <TabsTrigger
                       key={section.id}
@@ -226,7 +250,7 @@ const PreviewForm = ({
                     >
                       <div className='flex p-0 gap-1 items-center'>
                         Exercise {index + 1}{' '}
-                        {submitExercise?.[section?.id] && (
+                        {isExerciseDone && (
                           <Check className='w-4 h-4 text-green-600' />
                         )}
                       </div>
@@ -235,23 +259,43 @@ const PreviewForm = ({
                 })}
               </TabsList>
             </div>
-            <div className='pr-4'>
+            <div className='pr-4 flex items-center gap-4'>
               <Button
                 variant={'default'}
                 className='rounded-xl'
                 onClick={() => {
-                  const submitLength = Object.values(
-                    submitExercise || {}
-                  )?.filter(Boolean);
-                  if (submitLength?.length !== resource?.sections?.length) {
-                    toast({
+                  const answersLength = Object.values(answers)?.filter(
+                    (e) => e?.length > 0
+                  )?.length;
+
+                  const allQuestions = resource?.sections?.reduce(
+                    (sum, cur) => {
+                      sum += cur?.questions?.length || 0;
+                      return sum;
+                    },
+                    0
+                  );
+
+                  if (answersLength !== allQuestions) {
+                    return toast({
                       title: 'Please complete all exercises',
                       variant: 'destructive',
                     });
                   }
+
+                  submitAnswer();
                 }}
               >
-                Submit course
+                Submit Course
+              </Button>
+              <Button
+                variant='secondary'
+                type='button'
+                size='sm'
+                className='gap-1.5 text-sm'
+                onClick={getSubmitScore}
+              >
+                Get Submit score
               </Button>
             </div>
           </div>
@@ -308,20 +352,6 @@ const PreviewForm = ({
                             }
                           )}
                         </div>
-                        <Button
-                          className='mt-8'
-                          variant={'default'}
-                          onClick={() => {
-                            // submitExercise
-                            setSubmitExercise((exercises: any) => {
-                              const clone = structuredClone(exercises);
-                              clone[section?.id] = true;
-                              return clone;
-                            });
-                          }}
-                        >
-                          Submit Exercise
-                        </Button>
                       </div>
                     </div>
                     <div className='my-4 flex flex-col items-center'>
@@ -363,6 +393,8 @@ const PreviewForm = ({
                         >
                           {section?.questions?.[selectedQuestion]?.choices?.map(
                             (choice: any, index: number) => {
+                              const questionId =
+                                section?.questions?.[selectedQuestion]?.id;
                               return (
                                 <div
                                   className='flex items-center space-x-2 p-4 border rounded-md hover:border-[#2d88bc] cursor-pointer group'
@@ -374,19 +406,63 @@ const PreviewForm = ({
                                   }}
                                 >
                                   <Checkbox
-                                    checked={answers?.includes(choice?.title)}
+                                    checked={
+                                      !!answers?.[questionId]?.includes(
+                                        choice?.title
+                                      )
+                                    }
                                     className='group-hover:bg-white'
                                     onCheckedChange={(checked) => {
-                                      return checked
-                                        ? setAnswers((answers) => [
-                                            ...answers,
+                                      console.log(
+                                        'question',
+                                        section?.questions?.[selectedQuestion],
+                                        choice?.title
+                                      );
+                                      const _answersClone =
+                                        structuredClone(answers);
+                                      if (checked) {
+                                        if (!_answersClone[questionId]) {
+                                          _answersClone[questionId] = [
                                             choice?.title,
-                                          ])
-                                        : setAnswers((answers) =>
-                                            answers?.filter(
-                                              (value) => value !== choice?.title
-                                            )
+                                          ];
+                                        } else {
+                                          if (
+                                            !_answersClone[
+                                              questionId
+                                            ]?.includes?.(choice?.title)
+                                          ) {
+                                            _answersClone[questionId].push(
+                                              choice?.title
+                                            );
+                                          }
+                                        }
+                                      } else {
+                                        const index = _answersClone[
+                                          questionId
+                                        ]?.findIndex(
+                                          (e) => e === choice?.title
+                                        );
+
+                                        if (index !== -1) {
+                                          _answersClone[questionId]?.splice(
+                                            index,
+                                            1
                                           );
+                                        }
+                                      }
+
+                                      setAnswers(_answersClone);
+                                      //
+                                      // return checked
+                                      // ? setAnswers((answers) => [
+                                      // ...answers,
+                                      // choice?.title,
+                                      // ])
+                                      // : setAnswers((answers) =>
+                                      // answers?.filter(
+                                      // (value) => value !== choice?.title
+                                      // )
+                                      // );
                                     }}
                                     value={choice?.title}
                                     id={`choice-${index}`}
@@ -450,136 +526,270 @@ const PreviewForm = ({
   );
 
   // return (
-    // <TooltipProvider>
-      {/* <header className='w-full fixed top-0 z-10 justify-between flex h-[53px] items-center gap-1 border-b bg-background px-4'> */}
-        {/* <h1 className='text-xl font-semibold'>Question 1</h1> */}
-        {/* <div className='flex items-center gap-2'> */}
-          {/* <Button */}
-            // variant='secondary'
-            // type='button'
-            // size='sm'
-            // className='gap-1.5 text-sm'
-            // onClick={getLineItems}
-          // >
-            {/* Get Line Items */}
-          {/* </Button> */}
-          {/* <Button */}
-            // variant='secondary'
-            // type='button'
-            // size='sm'
-            // className='gap-1.5 text-sm'
-            // onClick={createLineItem}
-          // >
-            {/* Create Line Item */}
-          {/* </Button> */}
-          {/* <Button */}
-            // variant='secondary'
-            // type='button'
-            // size='sm'
-            // className='gap-1.5 text-sm'
-            // onClick={getLineItemByResourceID}
-          // >
-            {/* Get Line Item By Resource */}
-          {/* </Button> */}
-          {/* <Button */}
-            // variant='secondary'
-            // type='button'
-            // size='sm'
-            // className='gap-1.5 text-sm'
-            // onClick={getSubmitScore}
-          // >
-            {/* Get Submit score */}
-          {/* </Button> */}
-        {/* </div> */}
-      {/* </header> */}
-      {/* <div className='grid h-screen w-full pt-[53px] pl-[53px]'> */}
-        {/* <aside className='inset-y fixed  left-0 z-20 flex h-full flex-col border-r'> */}
-          {/* <nav className='grid gap-1 p-2'> */}
-            {/* <Tooltip key={question?.id}> */}
-              {/* <TooltipTrigger asChild> */}
-                {/* <Button */}
-                  // variant='ghost'
-                  // size='icon'
-                  // className='rounded-lg bg-muted'
-                  // aria-label='Playground'
-                // >
-                  {/* 1 */}
-                {/* </Button> */}
-              {/* </TooltipTrigger> */}
-              {/* <TooltipContent side='right' sideOffset={5}> */}
-                {/* {question?.question} */}
-              {/* </TooltipContent> */}
-            {/* </Tooltip> */}
-          {/* </nav> */}
-        {/* </aside> */}
-        {/* <div className='flex flex-col'> */}
-          {/* <main className='gap-4 overflow-auto p-4 py-10'> */}
-            {/* <ResizablePanelGroup */}
-              // direction='horizontal'
-              // className='w-full rounded-lg border'
-            // >
-              {/* <ResizablePanel defaultSize={60}> */}
-                {/* <div className='relative flex-col flex items-center justify-center gap-8 p-4 pt-12'> */}
-                  {/* <div className='whitespace-pre-wrap text-sm w-full'> */}
-                    {/* {question?.description} */}
-                  {/* </div> */}
-                  {/* <iframe */}
-                    // width='100%'
-                    // height='300px'
-                    // src={question?.embedLink}
-                    // className='max-w-[300px]'
-                  // />
-                {/* </div> */}
-              {/* </ResizablePanel> */}
-              {/* <ResizableHandle withHandle /> */}
-              {/* <ResizablePanel defaultSize={40}> */}
-                {/* <div className='w-full  gap-4 relative flex h-full items-start min-h-[50vh] flex-col rounded-xl p-4 pt-12'> */}
-                  {/* <div className='whitespace-pre-wrap text-xl font-bold'> */}
-                    {/* {question?.question} */}
-                  {/* </div> */}
-                  {/* <RadioGroup defaultValue='comfortable'> */}
-                    {/* {question?.choices?.map((choice: any) => { */}
-                      // return (
-                        // <div className='flex items-center space-x-2'>
-                          {/* <Checkbox */}
-                            // checked={answers?.includes(choice.title)}
-                            // onCheckedChange={(checked) => {
-                              // return checked
-                                // ? setAnswers((answers) => [
-                                    // ...answers,
-                                    // choice.title,
-                                  // ])
-                                // : setAnswers((answers) =>
-                                    // answers?.filter(
-                                      // (value) => value !== choice.title
-                                    // )
-                                  // );
-                            // }}
-                            // value={choice?.title}
-                            // id='r1'
-                          // />
-                          {/* <Label htmlFor='r1'>{choice?.title}</Label> */}
-                        {/* </div> */}
-                      // );
-                    // })}
-                  {/* </RadioGroup> */}
-                  {/* <div> */}
-                    {/* <Button */}
-                      // variant={'ghost'}
-                      // type='button'
-                      // className='p-2 h-auto ml-[-8px] p-2 bg-[#2d88bc] text-xs text-white rounded-md mr-2'
-                      // onClick={submitAnswer}
-                    // >
-                      {/* Submit Answer */}
-                    {/* </Button> */}
-                  {/* </div> */}
-                {/* </div> */}
-              {/* </ResizablePanel> */}
-            {/* </ResizablePanelGroup> */}
-          {/* </main> */}
-        {/* </div> */}
-      {/* </div> */}
-    {/* </TooltipProvider> */}
+  // <TooltipProvider>
+  {
+    /* <header className='w-full fixed top-0 z-10 justify-between flex h-[53px] items-center gap-1 border-b bg-background px-4'> */
+  }
+  {
+    /* <h1 className='text-xl font-semibold'>Question 1</h1> */
+  }
+  {
+    /* <div className='flex items-center gap-2'> */
+  }
+  {
+    /* <Button */
+  }
+  // variant='secondary'
+  // type='button'
+  // size='sm'
+  // className='gap-1.5 text-sm'
+  // onClick={getLineItems}
+  // >
+  {
+    /* Get Line Items */
+  }
+  {
+    /* </Button> */
+  }
+  {
+    /* <Button */
+  }
+  // variant='secondary'
+  // type='button'
+  // size='sm'
+  // className='gap-1.5 text-sm'
+  // onClick={createLineItem}
+  // >
+  {
+    /* Create Line Item */
+  }
+  {
+    /* </Button> */
+  }
+  {
+    /* <Button */
+  }
+  // variant='secondary'
+  // type='button'
+  // size='sm'
+  // className='gap-1.5 text-sm'
+  // onClick={getLineItemByResourceID}
+  // >
+  {
+    /* Get Line Item By Resource */
+  }
+  {
+    /* </Button> */
+  }
+  {
+    /* <Button */
+  }
+  // variant='secondary'
+  // type='button'
+  // size='sm'
+  // className='gap-1.5 text-sm'
+  // onClick={getSubmitScore}
+  // >
+  {
+    /* Get Submit score */
+  }
+  {
+    /* </Button> */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* </header> */
+  }
+  {
+    /* <div className='grid h-screen w-full pt-[53px] pl-[53px]'> */
+  }
+  {
+    /* <aside className='inset-y fixed  left-0 z-20 flex h-full flex-col border-r'> */
+  }
+  {
+    /* <nav className='grid gap-1 p-2'> */
+  }
+  {
+    /* <Tooltip key={question?.id}> */
+  }
+  {
+    /* <TooltipTrigger asChild> */
+  }
+  {
+    /* <Button */
+  }
+  // variant='ghost'
+  // size='icon'
+  // className='rounded-lg bg-muted'
+  // aria-label='Playground'
+  // >
+  {
+    /* 1 */
+  }
+  {
+    /* </Button> */
+  }
+  {
+    /* </TooltipTrigger> */
+  }
+  {
+    /* <TooltipContent side='right' sideOffset={5}> */
+  }
+  {
+    /* {question?.question} */
+  }
+  {
+    /* </TooltipContent> */
+  }
+  {
+    /* </Tooltip> */
+  }
+  {
+    /* </nav> */
+  }
+  {
+    /* </aside> */
+  }
+  {
+    /* <div className='flex flex-col'> */
+  }
+  {
+    /* <main className='gap-4 overflow-auto p-4 py-10'> */
+  }
+  {
+    /* <ResizablePanelGroup */
+  }
+  // direction='horizontal'
+  // className='w-full rounded-lg border'
+  // >
+  {
+    /* <ResizablePanel defaultSize={60}> */
+  }
+  {
+    /* <div className='relative flex-col flex items-center justify-center gap-8 p-4 pt-12'> */
+  }
+  {
+    /* <div className='whitespace-pre-wrap text-sm w-full'> */
+  }
+  {
+    /* {question?.description} */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* <iframe */
+  }
+  // width='100%'
+  // height='300px'
+  // src={question?.embedLink}
+  // className='max-w-[300px]'
+  // />
+  {
+    /* </div> */
+  }
+  {
+    /* </ResizablePanel> */
+  }
+  {
+    /* <ResizableHandle withHandle /> */
+  }
+  {
+    /* <ResizablePanel defaultSize={40}> */
+  }
+  {
+    /* <div className='w-full  gap-4 relative flex h-full items-start min-h-[50vh] flex-col rounded-xl p-4 pt-12'> */
+  }
+  {
+    /* <div className='whitespace-pre-wrap text-xl font-bold'> */
+  }
+  {
+    /* {question?.question} */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* <RadioGroup defaultValue='comfortable'> */
+  }
+  {
+    /* {question?.choices?.map((choice: any) => { */
+  }
+  // return (
+  // <div className='flex items-center space-x-2'>
+  {
+    /* <Checkbox */
+  }
+  // checked={answers?.includes(choice.title)}
+  // onCheckedChange={(checked) => {
+  // return checked
+  // ? setAnswers((answers) => [
+  // ...answers,
+  // choice.title,
+  // ])
+  // : setAnswers((answers) =>
+  // answers?.filter(
+  // (value) => value !== choice.title
+  // )
+  // );
+  // }}
+  // value={choice?.title}
+  // id='r1'
+  // />
+  {
+    /* <Label htmlFor='r1'>{choice?.title}</Label> */
+  }
+  {
+    /* </div> */
+  }
+  // );
+  // })}
+  {
+    /* </RadioGroup> */
+  }
+  {
+    /* <div> */
+  }
+  {
+    /* <Button */
+  }
+  // variant={'ghost'}
+  // type='button'
+  // className='p-2 h-auto ml-[-8px] p-2 bg-[#2d88bc] text-xs text-white rounded-md mr-2'
+  // onClick={submitAnswer}
+  // >
+  {
+    /* Submit Answer */
+  }
+  {
+    /* </Button> */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* </ResizablePanel> */
+  }
+  {
+    /* </ResizablePanelGroup> */
+  }
+  {
+    /* </main> */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* </div> */
+  }
+  {
+    /* </TooltipProvider> */
+  }
   // );
 };
 

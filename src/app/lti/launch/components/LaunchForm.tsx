@@ -2,7 +2,7 @@
 
 import { Question } from "@/models/question";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { remult } from "remult";
 import PreviewForm from "./PreviewForm";
 import { Resource } from "@/models/resource";
@@ -13,15 +13,16 @@ const LaunchForm = ({ token }: any) => {
   // const [question, setQuestion] = useState<Question>();
   const [resource, setResource] = useState<Resource>();
   const [loading, setLoading] = useState<boolean>(false);
-  const [sectionForm, setSectionForm] = useState();
   const [step, setStep] = useState(0);
   const [questionMap, setQuestionMap] = useState<Record<string, number>>({});
-  const [submitExercise, setSubmitExercise] = useState<Record<string, boolean>>({});
 
+  const resourceid = useMemo(() => {
+    if (!token?.launch?.target) return "";
+
+    return (new URL(token?.launch?.target || ''))?.searchParams?.get?.('resourceid');
+  }, [token])
 
   useEffect(() => {
-    if (token?.launch?.target) {
-      const resourceid = (new URL(token?.launch?.target || ''))?.searchParams?.get?.('resourceid');
       console.log("resourceid", resourceid)
       if (resourceid) {
         setLoading(true)
@@ -39,15 +40,15 @@ const LaunchForm = ({ token }: any) => {
           setQuestionMap(questionMap);
         })).finally(() => setLoading(false))
       }
-    }
-  }, [token?.launch?.target])
+  }, [resourceid])
 
   console.log("question", resource)
   console.log("token", token)
+  console.log("resourceid", resourceid)
 
   return (
     <div>
-      <PreviewForm setQuestionMap={setQuestionMap} questionMap={questionMap} setSubmitExercise={setSubmitExercise} submitExercise={submitExercise} token={token} loading={loading} resource={resource} />
+      <PreviewForm setQuestionMap={setQuestionMap} resourceid={resourceid} questionMap={questionMap} token={token} loading={loading} resource={resource} />
     </div>
   )
 }
