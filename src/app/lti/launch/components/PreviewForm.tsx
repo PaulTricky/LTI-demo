@@ -39,7 +39,8 @@ const PreviewForm = ({
   questionMap: Record<string, number>;
 }) => {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
-  const [continuePlay, setContinuePlay] = useState(true);
+  const [loadingScore, setLoadingScore] = useState(false);
+  const [loadingSubmitAnswer, setLoadingSubmitAnswer] = useState(false);
   const [currentScore, setCurrentScore] = useState<number[]>([]);
   const [token, setToken] = useState<any>();
   const { toast } = useToast();
@@ -73,6 +74,7 @@ const PreviewForm = ({
 
   const submitAnswer = async () => {
     console.log('answers', answers);
+    setLoadingSubmitAnswer(true);
     try {
       let _lineItemId = lineItemId;
       if (!_lineItemId) {
@@ -87,12 +89,15 @@ const PreviewForm = ({
 
       getTokenClientSide();
 
+      setLoadingSubmitAnswer(false);
+
       return toast({
         description: 'Submit score success',
       });
 
       // console.log("getLineItem", getLineItem);
     } catch (e) {
+      setLoadingSubmitAnswer(false);
       console.log('submit error', e);
       return toast({
         description: 'Failed',
@@ -217,23 +222,25 @@ const PreviewForm = ({
 
   const checkShowScoreResult = () => {
     getSubmitScore().then((data) => {
-      console.log('getSubmitScore', data);
       const item = data?.data?.scores?.find(
         (score: any) => score?.userId === token?.user?.id
       );
       if (item?.id && item?.resultScore >= 0 && item?.resultMaximum > 0) {
         setCurrentScore([item?.resultScore, item?.resultMaximum]);
       }
-    });
-  }
+    }).finally(() => {
+      setLoadingScore(false);
+    })
+  };
 
   useEffect(() => {
     if (lineItemId && token) {
+      setLoadingScore(true);
       checkShowScoreResult();
     }
   }, [lineItemId, token]);
 
-  if (!token || !resource?.sections?.length)
+  if (!token || !resource?.sections?.length || loadingScore)
     return (
       <div
         style={
@@ -348,6 +355,7 @@ const PreviewForm = ({
               <Button
                 variant={'default'}
                 className='rounded-xl'
+                disabled={loadingSubmitAnswer}
                 onClick={() => {
                   const answersLength = Object.values(answers)?.filter(
                     (e) => e?.length > 0
@@ -371,6 +379,24 @@ const PreviewForm = ({
                   submitAnswer();
                 }}
               >
+                {loadingSubmitAnswer ? (
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    width='24'
+                    height='24'
+                    viewBox='0 0 24 24'
+                    fill='none'
+                    stroke='currentColor'
+                    strokeWidth='2'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    className={cn('mr-2 h-4 w-4 animate-spin')}
+                  >
+                    <path d='M21 12a9 9 0 1 1-6.219-8.56' />
+                  </svg>
+                ) : (
+                  ''
+                )}{' '}
                 Submit Course
               </Button>
               <Button
@@ -608,7 +634,7 @@ const PreviewForm = ({
         </div>
       </Tabs>
     </div>
-  )
+  );
 };
 
 export default PreviewForm;
