@@ -13,7 +13,7 @@ import { RadioGroup } from '@/components/ui/radio-group';
 import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { Resource } from '@/models/resource';
 import { Separator } from '@/components/ui/separator';
