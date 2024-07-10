@@ -238,7 +238,7 @@ const PreviewForm = ({
       setLoadingScore(true);
       checkShowScoreResult();
     }
-  }, [lineItemId, token]);
+  }, [lineItemId, token?.user?.id]);
 
   if (!token || !resource?.sections?.length || loadingScore)
     return (
@@ -254,7 +254,7 @@ const PreviewForm = ({
           src='/images/background.jpg'
           className='absolute top-0 left-0 w-full h-full'
         />
-        <div className='absolute left-1/2 top-1/2 text-white'>
+        <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 trans text-white'>
           Loading Question...
         </div>
       </div>
