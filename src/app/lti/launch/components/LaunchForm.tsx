@@ -48,7 +48,7 @@ const LaunchForm = ({ token }: any) => {
 
   return (
     <div>
-      <PreviewForm setQuestionMap={setQuestionMap} resourceid={resourceid} questionMap={questionMap} token={token} loading={loading} resource={resource} />
+      <PreviewForm setQuestionMap={setQuestionMap} resourceid={resourceid} questionMap={questionMap} tokenKey={token} loading={loading} resource={resource} />
     </div>
   )
 }
