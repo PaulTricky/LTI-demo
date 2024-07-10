@@ -40,7 +40,7 @@ const PreviewForm = ({
 }) => {
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const [continuePlay, setContinuePlay] = useState(true);
-  const [currentScore, setCurrentScore] = useState<number[]>([80, 100]);
+  const [currentScore, setCurrentScore] = useState<number[]>([]);
   const [token, setToken] = useState<any>();
   const { toast } = useToast();
 
@@ -113,6 +113,7 @@ const PreviewForm = ({
       console.log('getTokenClientSide', res.data.data);
       if (res.data.data) {
         setToken(res.data.data);
+        checkShowScoreResult();
       }
       return res.data.data;
     } catch (e) {
@@ -214,17 +215,21 @@ const PreviewForm = ({
   console.log('selectedSection', resource);
   console.log('questionMap', questionMap);
 
+  const checkShowScoreResult = () => {
+    getSubmitScore().then((data) => {
+      console.log('getSubmitScore', data);
+      const item = data?.data?.scores?.find(
+        (score: any) => score?.userId === token?.user?.id
+      );
+      if (item?.id && item?.resultScore >= 0 && item?.resultMaximum > 0) {
+        setCurrentScore([item?.resultScore, item?.resultMaximum]);
+      }
+    });
+  }
+
   useEffect(() => {
     if (lineItemId && token) {
-      getSubmitScore().then((data) => {
-        console.log('getSubmitScore', data);
-        const item = data?.data?.scores?.find(
-          (score: any) => score?.userId === token?.user?.id
-        );
-        if (item?.id && item?.resultScore > 0 && item?.resultMaximum > 0) {
-          setCurrentScore([item?.resultScore, item?.resultMaximum]);
-        }
-      });
+      checkShowScoreResult();
     }
   }, [lineItemId, token]);
 
