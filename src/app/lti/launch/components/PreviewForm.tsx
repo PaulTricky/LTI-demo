@@ -240,7 +240,7 @@ const PreviewForm = ({
     }
   }, [lineItemId, token?.user?.id]);
 
-  if (!token || !resource?.sections?.length || loadingScore)
+  if ((!token || !resource?.sections?.length || loadingScore))
     return (
       <div
         style={
@@ -318,38 +318,15 @@ const PreviewForm = ({
 
   return (
     <div className='p-8 max-w-[900px] mx-auto'>
-      <Tabs className='w-auto' defaultValue={resource?.sections?.[0]?.id}>
+      <Tabs className='w-auto' defaultValue={resource?.sections?.[0]?.id} orientation='vertical'>
         <img
           src='/images/background.jpg'
           className='absolute top-0 left-0 w-full h-full'
         />
         <div className='h-screen flex flex-col justify-center items-start gap-4'>
-          <div className='flex justfy-between items-center bg-white relative w-full gap-4'>
-            <div className='w-full'>
-              <TabsList
-                className={`h-[50px] inline-flex items-center text-muted-foreground w-full justify-start rounded-none border-b bg-white`}
-              >
-                {resource?.sections?.map((section, index) => {
-                  const isExerciseDone = section?.questions?.every(
-                    (question) => !!(answers[question?.id]?.length > 0)
-                  );
-
-                  return (
-                    <TabsTrigger
-                      key={section.id}
-                      value={section.id}
-                      className='inline-flex items-center justify-center whitespace-nowrap py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background relative rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none'
-                    >
-                      <div className='flex p-0 gap-1 items-center'>
-                        Exercise {index + 1}{' '}
-                        {isExerciseDone && (
-                          <Check className='w-4 h-4 text-green-600' />
-                        )}
-                      </div>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
+          <div className='h-[50px] flex justfy-between items-center bg-white relative w-full gap-4'>
+            <div className='w-full font-normal p-4'>
+              Microscape Exercise
             </div>
             <div className='pr-4 flex items-center gap-4'>
               <Button
@@ -403,38 +380,67 @@ const PreviewForm = ({
                 variant='secondary'
                 type='button'
                 size='sm'
-                className='gap-1.5 text-sm'
+                className='gap-1.5 text-sm hidden'
                 onClick={getSubmitScore}
               >
                 Get Submit score
               </Button>
             </div>
           </div>
+          <div className="mt-2 flex gap-4">
+          <div className="relative h-full bg-white">
+          <TabsList
+  className={`bg-white flex-col inline-flex items-center text-muted-foreground w-full justify-start rounded-none bg-white`}
+>
+<div className="text-xs text-muted-foreground mt-2  px-4">Exercise</div>
+<Separator className="mt-2 mb-4" />
+  {resource?.sections?.map((section, index) => {
+    const isExerciseDone = section?.questions?.every(
+      (question) => !!(answers[question?.id]?.length > 0)
+    );
+    return (
+      <TabsTrigger
+        key={section.id}
+        value={section.id}
+        className='inline-flex items-center !py-2 !px-4 justify-center whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background relative rounded-none border-b-2 border-b-transparent bg-transparent px-4 pb-3 pt-2 font-semibold text-muted-foreground shadow-none transition-none data-[state=active]:border-b-primary data-[state=active]:text-foreground data-[state=active]:shadow-none data-[state=active]:bg-[#2d88bc] data-[state=active]:text-white border-none rounded'
+      >
+        <div className='flex p-0 gap-1 items-center'>
+          {index + 1}{' '}
+          {isExerciseDone ? (
+            <Check className='w-4 h-4 text-green-500' />
+          ) : <div className="w-4 h-4"></div>}
+        </div>
+      </TabsTrigger>
+    );
+  })}
+</TabsList>
+          </div>
           {resource?.sections?.map((section: any, index) => {
             const selectedSection = section;
             const selectedQuestion = questionMap[section?.id as string];
             return (
-              <TabsContent value={section?.id} className='w-full'>
-                <div className='flex w-[70%] gap-10 mx-auto relative z-10 w-full justify-center'>
+              <TabsContent value={section?.id} className='m-0 w-full'>
+                <div className='flex w-[70%] gap-4 mx-auto relative z-10 w-full justify-center'>
                   <div className='w-[250px] bg-white px-4 flex flex-col justify-between'>
                     <div>
                       {/* <div className='text-center py-5'>Section 1</div> */}
-                      <Separator />
-                      <div className='py-4'>
-                        <div className='text-center text-3xl text-[#2d88bc]'>
-                          29:12
-                        </div>
-                        <div className='text-base flex items-center justify-center gap-1 mt-2'>
-                          <AlarmClock className='w-6 h-6' />
-                          Time Left
-                        </div>
-                      </div>
+                      {/* <Separator /> */}
+                      {/* <div className='py-4'> */}
+                        {/* <div className='text-center text-3xl text-[#2d88bc]'> */}
+                          {/* 29:12 */}
+                        {/* </div> */}
+                        {/* <div className='text-base flex items-center justify-center gap-1 mt-2'> */}
+                          {/* <AlarmClock className='w-6 h-6' /> */}
+                          {/* Time Left */}
+                        {/* </div> */}
+                      {/* </div> */}
                       {/* <div className='text-center text-base mb-4'>Question: {selectedSection?.questions?.length}</div> */}
-                      <Separator />
-                      <div className='my-4 flex items-center flex-col'>
-                        <div className='text-center font-medium'>
+                      {/* <Separator /> */}
+                      <div className='mt-2 mb-4 flex items-center flex-col'>
+                        <div className='text-xs text-muted-foreground text-center font-medium pt-1'>
                           Question Sheet
                         </div>
+                        <Separator className="mt-2" />
                         <div className='text-center font-medium mt-4 flex flex-wrap gap-2'>
                           {selectedSection?.questions?.map(
                             (question: Question, index: number) => {
@@ -465,11 +471,11 @@ const PreviewForm = ({
                         </div>
                       </div>
                     </div>
-                    <div className='my-4 flex flex-col items-center'>
-                      <div className='text-sm text-muted-foreground'>
-                        Total Question: {selectedSection?.questions?.length}
-                      </div>
-                    </div>
+                    {/* <div className='my-4 flex flex-col items-center'> */}
+                      {/* <div className='text-sm text-muted-foreground'> */}
+                        {/* Total Question: {selectedSection?.questions?.length} */}
+                      {/* </div> */}
+                    {/* </div> */}
                   </div>
                   <div className='w-full p-4 bg-white'>
                     <div className='flex flex-col gap-4 text-xl'>
@@ -631,6 +637,7 @@ const PreviewForm = ({
               </TabsContent>
             );
           })}
+          </div>
         </div>
       </Tabs>
     </div>
